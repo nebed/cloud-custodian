@@ -214,7 +214,7 @@ def main():
         if is_azure_cloud(mailer_config):
             azure_deploy.provision(mailer_config)
         elif is_gcp_cloud(mailer_config):
-            raise Warning('Deploying mailer as a google cloud function is not supported at this time.')
+            raise Warning('Deploying mailer as a google cloud function is not supported yet.')
         else:
             deploy.provision(mailer_config, functools.partial(session_factory, mailer_config))
 

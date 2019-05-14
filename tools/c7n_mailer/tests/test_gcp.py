@@ -16,9 +16,8 @@ import base64
 import json
 import unittest
 import zlib
-from common import logger, MAILER_CONFIG_1, GCP_MESSAGE, GCP_MESSAGES
+from common import logger, MAILER_CONFIG_1, GCP_MESSAGE
 from c7n_mailer.gcp.gcp_pubsub_processor import MailerGcpPubSubProcessor
-from c7n_mailer.email_delivery import EmailDelivery
 from mock import MagicMock, patch
 
 
@@ -40,6 +39,3 @@ class GcpTest(unittest.TestCase):
         processor = MailerGcpPubSubProcessor(MAILER_CONFIG_1, logger)
         processor.run()
         self.assertEqual(1, mock_receive.call_count)
-
-
-
