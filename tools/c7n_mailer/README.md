@@ -470,7 +470,7 @@ Configuration for this scenario requires only minor changes from AWS deployments
 The notify action in your policy will reflect transport type `asq` with the URL
 to an Azure Storage Queue.  For example:
 
-```yml
+```yaml
 policies:
   - name: gcp-notify
     resource: gcp.compute
@@ -492,7 +492,7 @@ as well as your topic subscription path in the queue_url variable. Please note t
 subscription you specify should be subscribed to the topic you assign in your policies'
 notify action for GCP resources.
 
-```yml
+```yaml
 queue_url: projects/myproject/subscriptions/mysubscription
 from_address: you@youremail.com
 smtp_server: my.smtp.add.ress
