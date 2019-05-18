@@ -17,8 +17,7 @@ import unittest
 from common import logger, MAILER_CONFIG_1, GCP_MESSAGE, GCP_MESSAGES
 from c7n_mailer.gcp.gcp_pubsub_processor import MailerGcpPubSubProcessor
 from c7n_mailer.email_delivery import EmailDelivery
-from c7n_gcp.client import Session
-from mock import MagicMock, patch
+from mock import patch
 
 
 class GcpTest(unittest.TestCase):
@@ -32,3 +31,10 @@ class GcpTest(unittest.TestCase):
         mock_email.return_value = True
         processor = MailerGcpPubSubProcessor(MAILER_CONFIG_1, logger)
         self.assertIsNone(processor.process_message(GCP_MESSAGES['receivedMessages'][0]))
+
+    @patch.object(MailerGcpPubSubProcessor, 'ack_messages')
+    @patch.object(MailerGcpPubSubProcessor, 'receive_messages')
+    def test_run(self, mock_receive):
+        mock_receive.return_value = []
+        processor = MailerGcpPubSubProcessor(MAILER_CONFIG_1, logger)
+        processor.run()
