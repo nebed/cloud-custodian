@@ -110,6 +110,8 @@ class DescribeRole(DescribeSource):
         client = local_session(self.manager.session_factory).client('iam')
         resources = []
         for rid in resource_ids:
+            if rid.startswith('arn'):
+                rid = Arn.parse(rid).resource
             try:
                 result = self.manager.retry(client.get_role, RoleName=rid)
             except client.exceptions.NoSuchEntityException:
@@ -563,7 +565,8 @@ class CheckPermissions(Filter):
         # the iam role for the resource to get the boundary.
         if self.manager.type not in ('iam-role', 'iam-user'):
             iam_arns = {iam_arn for iam_arn, r in iam_resources if iam_arn is not None}
-            roles = self.manager.get_resource_manager('iam-role').get_resources(list(iam_arns))
+            roles = self.manager.get_resource_manager(
+                'iam-role').get_resources(list(iam_arns), augment=False)
             boundary_iam_map = {
                 r['Arn']: r.get('PermissionsBoundary', {}).get('PermissionsBoundaryArn')
                 for r in roles}
@@ -584,7 +587,7 @@ class CheckPermissions(Filter):
         boundaries = {}
         for p in policies:
             boundaries[p['Arn']] = json.dumps(client.get_policy_version(
-                PolicyArn=p['PolicyArn'],
+                PolicyArn=p['Arn'],
                 VersionId=p['DefaultVersionId'])['PolicyVersion']['Document'])
 
         for resource_arn, boundary_arn in list(boundary_map.items()):
@@ -614,7 +617,7 @@ class CheckPermissions(Filter):
             boundary_policy = self.boundaries.get(
                 self.manager.get_arns([r])[0])
             if boundary_policy:
-                params['PermissionsBoundaryPolicyInputList'] = [json.dumps(boundary_policy)]
+                params['PermissionsBoundaryPolicyInputList'] = [boundary_policy]
 
         evaluations = self.manager.retry(
             client.simulate_principal_policy, **params).get('EvaluationResults', ())
