@@ -558,7 +558,8 @@ class CheckPermissions(Filter):
         """For IAM boundaries we need to retrieve boundary policy content.
         """
         # boundaries aren't attached to these.
-        if self.manager.type in ('iam-policy', 'iam-group') or self.data.get('boundary', True) is False:
+        if (self.manager.type in ('iam-policy', 'iam-group') or
+                self.data.get('boundary', True) is False):
             return
 
         # if boundary attributes aren't directly on the resource, fetch
